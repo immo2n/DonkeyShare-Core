@@ -1,5 +1,7 @@
 # DonkeyShare Core (`DonkeyShare-Core`)
 
+![DonkeyShare Core Engine](img/git-img.png)
+
 The core file-handling, transfer operations, and server engine of **DonkeyShare** written in Go.
 
 This repository houses the core operational logic of the file-sharing application, completely decoupled from any specific GUI layout, desktop bridge, or Web UI frontend.
@@ -61,3 +63,9 @@ This source code is made available solely for review, inspection, and educationa
 * **Prohibitions:** You may **not** copy, modify, distribute, publish, sublicense, merge, package, or use this software (or any portion thereof) for any commercial or non-commercial purpose whatsoever.
 
 For inquiries regarding licensing or alternative arrangements, please contact the repository owner.
+
+---
+
+## Copyright Attributions
+
+The Go gopher mascot used in the project icons and brand assets was originally designed by Renee French and is licensed under the Creative Commons 3.0 Attribution license. The Go gopher brand, character, and mascot are the intellectual property of Google LLC. All other copyrights and trademarks are the property of their respective owners.
