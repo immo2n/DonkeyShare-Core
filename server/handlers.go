@@ -45,8 +45,8 @@ func (s *Server) HandleList(w http.ResponseWriter, r *http.Request) {
 		relClean = ""
 	}
 
-	if relClean == ".Trash-FileLink" {
-		trashPath := filepath.Join(s.cfg.SharedRoot, ".Trash-FileLink")
+	if relClean == ".Donkey-Trash" {
+		trashPath := filepath.Join(s.cfg.SharedRoot, ".Donkey-Trash")
 		if _, err := os.Stat(trashPath); os.IsNotExist(err) {
 			_ = os.MkdirAll(trashPath, 0775)
 		}
@@ -86,7 +86,7 @@ func (s *Server) HandleList(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		if name == ".Trash-FileLink" && relClean == "" {
+		if name == ".Donkey-Trash" && relClean == "" {
 			continue
 		}
 
@@ -654,7 +654,7 @@ func (s *Server) HandleDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	trashRel := ".Trash-FileLink"
+	trashRel := ".Donkey-Trash"
 
 	if rel == trashRel {
 		entries, err := os.ReadDir(targetPath)
