@@ -52,6 +52,14 @@ func (s *Server) HandleList(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if relClean == "Donkey-Clipboard" || strings.HasPrefix(relClean, "Donkey-Clipboard/") {
+		RespondJSON(w, http.StatusForbidden, map[string]interface{}{
+			"ok":    false,
+			"error": "Access denied to restricted directory",
+		})
+		return
+	}
+
 	dirPath, err := SafeJoin(s.cfg.SharedRoot, relClean)
 	if err != nil {
 		RespondJSON(w, http.StatusBadRequest, map[string]interface{}{
@@ -86,7 +94,7 @@ func (s *Server) HandleList(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		if name == ".Donkey-Trash" && relClean == "" {
+		if (name == ".Donkey-Trash" || name == "Donkey-Clipboard") && relClean == "" {
 			continue
 		}
 
@@ -218,6 +226,14 @@ func (s *Server) HandleUpload(w http.ResponseWriter, r *http.Request) {
 	relClean = strings.TrimPrefix(relClean, "/")
 	if relClean == "." {
 		relClean = ""
+	}
+
+	if relClean == "Donkey-Clipboard" || strings.HasPrefix(relClean, "Donkey-Clipboard/") {
+		RespondJSON(w, http.StatusForbidden, map[string]interface{}{
+			"ok":    false,
+			"error": "Access denied to restricted directory",
+		})
+		return
 	}
 
 	destDir, err := SafeJoin(s.cfg.SharedRoot, relClean)
@@ -602,6 +618,21 @@ func (s *Server) HandleCreateDir(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	relClean := strings.ReplaceAll(rel, "\\", "/")
+	relClean = path.Clean("/" + relClean)
+	relClean = strings.TrimPrefix(relClean, "/")
+	if relClean == "." {
+		relClean = ""
+	}
+
+	if relClean == "Donkey-Clipboard" || strings.HasPrefix(relClean, "Donkey-Clipboard/") || name == "Donkey-Clipboard" {
+		RespondJSON(w, http.StatusForbidden, map[string]interface{}{
+			"ok":    false,
+			"error": "Access denied to restricted directory",
+		})
+		return
+	}
+
 	targetDir, err := SafeJoin(s.cfg.SharedRoot, filepath.Join(rel, name))
 	if err != nil {
 		RespondJSON(w, http.StatusBadRequest, map[string]interface{}{
@@ -642,6 +673,14 @@ func (s *Server) HandleDelete(w http.ResponseWriter, r *http.Request) {
 		RespondJSON(w, http.StatusBadRequest, map[string]interface{}{
 			"ok":    false,
 			"error": "Cannot delete shared root directory",
+		})
+		return
+	}
+
+	if rel == "Donkey-Clipboard" || strings.HasPrefix(rel, "Donkey-Clipboard/") {
+		RespondJSON(w, http.StatusForbidden, map[string]interface{}{
+			"ok":    false,
+			"error": "Access denied to restricted directory",
 		})
 		return
 	}
@@ -739,6 +778,14 @@ func (s *Server) HandleMove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if src == "Donkey-Clipboard" || strings.HasPrefix(src, "Donkey-Clipboard/") || dest == "Donkey-Clipboard" || strings.HasPrefix(dest, "Donkey-Clipboard/") {
+		RespondJSON(w, http.StatusForbidden, map[string]interface{}{
+			"ok":    false,
+			"error": "Access denied to restricted directory",
+		})
+		return
+	}
+
 	srcPath, err := SafeJoin(s.cfg.SharedRoot, src)
 	if err != nil {
 		RespondJSON(w, http.StatusBadRequest, map[string]interface{}{
@@ -808,6 +855,14 @@ func (s *Server) HandleCopy(w http.ResponseWriter, r *http.Request) {
 		RespondJSON(w, http.StatusBadRequest, map[string]interface{}{
 			"ok":    false,
 			"error": "Source path cannot be empty",
+		})
+		return
+	}
+
+	if src == "Donkey-Clipboard" || strings.HasPrefix(src, "Donkey-Clipboard/") || dest == "Donkey-Clipboard" || strings.HasPrefix(dest, "Donkey-Clipboard/") {
+		RespondJSON(w, http.StatusForbidden, map[string]interface{}{
+			"ok":    false,
+			"error": "Access denied to restricted directory",
 		})
 		return
 	}
