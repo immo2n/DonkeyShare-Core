@@ -141,9 +141,10 @@ func (s *Server) HandleList(w http.ResponseWriter, r *http.Request) {
 	})
 
 	RespondJSON(w, http.StatusOK, map[string]interface{}{
-		"ok":    true,
-		"path":  relClean,
-		"items": items,
+		"ok":        true,
+		"path":      relClean,
+		"items":     items,
+		"read_only": s.cfg.ReadOnly,
 	})
 }
 

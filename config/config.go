@@ -18,6 +18,7 @@ type Config struct {
 	ShowLogs   bool
 	SharedRoot string
 	Secure     bool
+	ReadOnly   bool
 }
 
 func ParseSize(sizeStr string) (int64, error) {

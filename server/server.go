@@ -33,6 +33,16 @@ func (s *Server) LogMiddleware(next http.Handler) http.Handler {
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	api := r.URL.Query().Get("api")
+	if s.cfg.ReadOnly {
+		switch api {
+		case "upload", "upload-chunk", "create-dir", "delete", "move", "copy":
+			RespondJSON(w, http.StatusForbidden, map[string]interface{}{
+				"ok":    false,
+				"error": "Write operations are disabled in read-only mode",
+			})
+			return
+		}
+	}
 	switch api {
 	case "list":
 		s.HandleList(w, r)
