@@ -810,13 +810,7 @@ func (s *Server) HandleMove(w http.ResponseWriter, r *http.Request) {
 		destPath = filepath.Join(destPath, filename)
 	}
 
-	if _, err := os.Stat(destPath); err == nil {
-		RespondJSON(w, http.StatusBadRequest, map[string]interface{}{
-			"ok":    false,
-			"error": "Destination file already exists",
-		})
-		return
-	}
+	destPath = getUniqueDestPath(destPath)
 
 	if err := os.Rename(srcPath, destPath); err != nil {
 		RespondJSON(w, http.StatusInternalServerError, map[string]interface{}{
@@ -891,13 +885,7 @@ func (s *Server) HandleCopy(w http.ResponseWriter, r *http.Request) {
 		destPath = filepath.Join(destPath, filename)
 	}
 
-	if _, err := os.Stat(destPath); err == nil {
-		RespondJSON(w, http.StatusBadRequest, map[string]interface{}{
-			"ok":    false,
-			"error": "Destination file already exists",
-		})
-		return
-	}
+	destPath = getUniqueDestPath(destPath)
 
 	if err := copyFileOrDir(srcPath, destPath); err != nil {
 		RespondJSON(w, http.StatusInternalServerError, map[string]interface{}{
@@ -961,4 +949,28 @@ func copyFileHelper(src, dest string) error {
 		return err
 	}
 	return out.Sync()
+}
+
+func getUniqueDestPath(destPath string) string {
+	if _, err := os.Stat(destPath); err != nil {
+		// File does not exist, safe to use
+		return destPath
+	}
+	dir := filepath.Dir(destPath)
+	ext := filepath.Ext(destPath)
+	base := filepath.Base(destPath)
+	name := base[:len(base)-len(ext)]
+
+	for i := 1; ; i++ {
+		var newName string
+		if i == 1 {
+			newName = fmt.Sprintf("%s - Copy%s", name, ext)
+		} else {
+			newName = fmt.Sprintf("%s - Copy (%d)%s", name, i, ext)
+		}
+		newPath := filepath.Join(dir, newName)
+		if _, err := os.Stat(newPath); err != nil {
+			return newPath
+		}
+	}
 }
